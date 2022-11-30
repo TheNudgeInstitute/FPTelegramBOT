@@ -1,0 +1,12 @@
+### dotenv ###
+.env
+
+# Environments
+venv/
+
+# PyCharm
+.idea/
+
+# Custom Scripts
+script.py
+test.py
