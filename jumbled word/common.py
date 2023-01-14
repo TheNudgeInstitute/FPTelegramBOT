@@ -14,7 +14,7 @@ chat_id = None
 gameStarted = False  # to block creating new game if one is going on
 joinFlag = True  # to block joining patrticipants after 60 seconds
 # chat_type = None
-gameCounter = 0  # count the how many word appearead in a particular game
+gameCounter = 8  # count the how many word appearead in a particular game
 game_creater = {}  # storing data of who initiated the game
 participants = []  # storing data of joined participants in a particular game
 nextButtonCount = False  # decision for next word
@@ -71,7 +71,7 @@ def start_timer(name, sec, game, message):
     try:
         global wait60sec, runner, word
         for i in range(sec, -1, -1):
-            print(i, '--', sec)
+            print(i, '--', sec,name,runner)
             if time_breaker:
                 break
             time.sleep(1)
