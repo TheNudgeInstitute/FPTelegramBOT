@@ -28,7 +28,6 @@ game_time = datetime.datetime.now()
 common.nextEditButton = None
 common.last_Right_ans = ''
 
-
 def restartGame():
     common.joinFlag = True  # to block joining patrticipants after 60 seconds
     # common.chat_type = None
