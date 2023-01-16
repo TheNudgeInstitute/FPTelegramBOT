@@ -29,7 +29,7 @@ game_time = datetime.datetime.now()
 common.nextEditButton = None
 common.last_Right_ans = ''
 
-bot_username = '@run'  # bot username
+bot_username = '@jumbleword'  # bot username
 
 
 def restartGame():
