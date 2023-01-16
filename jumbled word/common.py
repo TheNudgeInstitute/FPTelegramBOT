@@ -28,7 +28,6 @@ word = ''
 runner = 0
 used_words = []
 gessWord = ''
-day = 0
 scour_Dict = {}
 wait60sec = 0  # waiting time for particiants to join the game (60)
 wait40sec = 40  # waiting time for particiants to join the game (60
@@ -71,16 +70,15 @@ def start_timer(name, sec, game, message):
     try:
         global wait60sec, runner, word
         for i in range(sec, -1, -1):
-            print(i, '--', sec,name,runner)
             if time_breaker:
                 break
             time.sleep(1)
             wait60sec = i
+            print(sec, i, name, runner)
             if i == 30 or i == 15:
                 if name == 'join-wait':
                     jumble.create_game('/jumbleword', message, i)
                     runner == 2
-
             elif i == 0:
                 word = ''
                 if name == 'guess-wait' and runner == 1:
