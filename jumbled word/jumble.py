@@ -1,12 +1,12 @@
 import threading
-
 import time
 import datetime
 import os
 import time
 import telebot
 from datetime import date
-
+import schedule
+import random
 
 # ___ import files
 import common
@@ -28,9 +28,13 @@ game_time = datetime.datetime.now()
 common.nextEditButton = None
 common.last_Right_ans = ''
 
+schedule.every().day.at("01:00").do(end_call.UpdateTheData)
+schedule.run_all()
+
+
 def restartGame():
     common.joinFlag = True  # to block joining patrticipants after 60 seconds
-    # common.chat_type = None
+    common.chat_type = None
     common.gameCounter = 0
     common.game_creater = {}
     common.participants = []
@@ -44,7 +48,6 @@ def restartGame():
     common.wait60sec = 0  # waiting time for particiants to join the game (60)
     common.wait40sec = 40  # waiting time for particiants to join the game (60
     common.guessTime = 40  # waiting time to guess the word
-
     # variiiii
     common.sec60 = 60
     common.word = ''
@@ -55,21 +58,16 @@ def restartGame():
     common.gameStarted = False  # to block creating new game if one is going on
 
 
-print('>>>>>>>>>>>>>>>>>>', os.getenv("bot_username"))
-
-
 def ErrorHandler(er):
     restartGame()
     bot.send_message(common.chat_id, f'''Server is down try again start the game /jumbleword{os.getenv("bot_username")} \n  {er}''',
                      parse_mode='markdown'
                      )
 
-
 def delete_message(chat_id, message_id, sec=0):
     # time.sleep(sec)
     bot.delete_message(chat_id, message_id)
     # return True
-
 
 def controleNextBtn(message, bool):
     if common.gameCounter <= 10:
@@ -112,8 +110,6 @@ def controleNextBtn(message, bool):
                 else:
                     join_game('join-jumble', message, 'gg', 0)
             else:
-                print(common.gameCounter == 10, '99999999999999999999999999')
-
                 if common.gameCounter == 10:
                     common.runner = 3
                     common.time_breaker = False
@@ -127,7 +123,7 @@ def controleNextBtn(message, bool):
                         ErrorHandler(e)
                 else:
                     common.nextEditButton = bot.send_message(
-                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n Hey, word was: {common.gessWord}",
+                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n Hey, word was: {common.gessWord}\nClick the button below for the next word 👇",
                         disable_notification=True,
                         reply_markup=keyboard,
                         parse_mode='markdown')
@@ -142,12 +138,29 @@ def controleNextBtn(message, bool):
             ErrorHandler(e)
 
 
-
 def alert(messageId, msg, show_alert=False):
     if show_alert:
         bot.answer_callback_query(messageId, msg, show_alert=True)
     else:
         bot.answer_callback_query(messageId, msg)
+
+
+def genrate_sessionId():
+    sessionData, totalSess = DB.read_read('TB_Temp_JumbledWord_Session')
+    f = True
+
+    def generateFun():
+        common.sessionId = random.randrange(1000, 9999)
+        for dic in sessionData:
+            print('dic: ', dic)
+            if common.sessionId == dic['sessionId']:
+                f = False
+                break
+    while True:
+        print('while:True')
+        generateFun()
+        if f:
+            break
 
 
 def create_game(game, message, t=60):
@@ -158,9 +171,7 @@ def create_game(game, message, t=60):
     if (game == '/jumbleword' or game == '/jumbleword'+os.getenv("bot_username")):
         print('----> inside create game ')
         keyboard.row(
-            telebot.types.InlineKeyboardButton(
-                text='Join Game 🎮', callback_data='join-jumble', activeforeground="red", activebackground="pink", pady=10),
-        )
+            telebot.types.InlineKeyboardButton(text='Join Game 🎮', callback_data='join-jumble', activeforeground="red", activebackground="pink", pady=10),)
         first_name = message.from_user.first_name
         common.editJoinMsg = bot.send_message(
             chat_id, f'A Jumble word game is Start... \nYou Have  *⌛{t}* _s_ to Join',
@@ -169,9 +180,14 @@ def create_game(game, message, t=60):
         )
         if t == common.sec60:
             bot.send_message(
+                chat_id, f"Let's start ⏳\nThis game will have 10 rounds",
+                parse_mode='markdown'
+            )
+            genrate_sessionId()
+            bot.send_message(
                 chat_id, f'{first_name} joined. \n There is now {common.total_players} players')
             common.scour_Dict[message.from_user.id] = {
-                'points': 0, "user_name": message.from_user.first_name}
+                'points': 0, "user_name": message.from_user.first_name, 'sessionId': common.sessionId}
             # # creating thread for counter. students will get 60 seconds time to participate in jumble word game
             join_counter = threading.Thread(target=common.start_timer, args=(
                 'join-wait', t, 'join-jumble', common.editJoinMsg))  # joining button thread
@@ -179,6 +195,7 @@ def create_game(game, message, t=60):
                 join_counter.start()
             except Exception as e:
                 ErrorHandler(e)
+
 
 def auto_next_word(message):
     common.nextButtonCount = True  # for limiting the next button click
@@ -188,7 +205,6 @@ def auto_next_word(message):
 
 
 def join_game(game, message, mode='auto', time=60):
-
     skip = False
     if mode == 'skip':
         skip = True
@@ -197,11 +213,9 @@ def join_game(game, message, mode='auto', time=60):
         chat_id = message.json['message']['chat']['id']
     else:
         chat_id = message.json['chat']['id']
-
     if not (skip):
         global current_word_Message
         user_id = message.from_user.id
-
         if (game == 'join-jumble'):
             first_name = message.from_user.first_name
 
@@ -253,7 +267,7 @@ def join_game(game, message, mode='auto', time=60):
                     bot.send_message(
                         chat_id, f'{first_name} joined. \n There are now {common.total_players} players')
                     common.scour_Dict[message.from_user.id] = {
-                        'points': 0, "user_name": message.from_user.first_name}
+                        'points': 0, "user_name": message.from_user.first_name, 'sessionId': common.sessionId}
             elif common.gameCounter >= 10:
                 common.time_breaker = False
                 winner_announce = threading.Thread(
@@ -274,10 +288,6 @@ def winner(message, r=True):
         chat_id = message.json['chat']['id']
     else:
         chat_id = common.chat_id
-    # if common.gameCounter == 10:
-    #     bot.send_message(message.chat.id, f'Congratulations *{message.from_user.first_name}*👏🥳🎉, \n the You guessed the word',
-    #                      disable_notification=True,
-    #                      parse_mode='markdown')
 
     print('total score!! : ', common.scour_Dict)
     li = []
@@ -288,12 +298,12 @@ def winner(message, r=True):
 
     li2 = li.copy()
     li.sort(reverse=True)
-    print(li,li2,name)
+    print(li, li2, name)
 
     firs = li2.index(li[0])
     first_name = name[li2.index(li[0])]
     li.pop(0)
-    
+
     common.runner = 2
     if li2[firs] != 0:
         if len(common.scour_Dict) >= 2:
@@ -345,7 +355,7 @@ def winner(message, r=True):
         t = time.time()
         t_ms = int(t * 1000)
         data = {"Id": str(t_ms), "Datetime": str(datetime.datetime.now()), "User_Id": str(
-            d), "Points_Scored": str(common.scour_Dict[d]['points'])}
+            d), "Points_Scored": str(common.scour_Dict[d]['points']), "sessionId": common.scour_Dict[d]['sessionId']}
         DB.send_data(data, 'TB_Temp_JumbledWord_Session')
     today = str(date.today())
     print('one time run in a one day!!', today == common.todayDate)
@@ -357,14 +367,13 @@ def winner(message, r=True):
     restartGame()
 
 
-print("Hi, Jumble here!", os.getenv('bot_username'))
+print("Hi, Jumble here!\n\t", os.getenv('bot_username'))
 bot = telebot.TeleBot(os.getenv('API_KEY'))
 
 
 def main():
     @bot.message_handler(commands=['jumbleword'])
     def send_welcome(message):
-        # common.chat_type = message.chat.type
         command = message.text
         print(message.chat.type, '-> chat type', command)
         if command.startswith('/jumbleword') and not common.gameStarted:

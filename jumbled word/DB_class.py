@@ -2,13 +2,14 @@ import boto3
 import os
 from dotenv import load_dotenv
 
-load_dotenv() # this is for the env file loading
+load_dotenv()  # this is for the env file loading
 
 Session_id = 0
 
 class DynamoDB_con():
     def __init__(self):
-        self.dynamo_client = boto3.resource(service_name=os.getenv('service_name'), region_name=os.getenv('region_name'), aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
+        self.dynamo_client = boto3.resource(service_name=os.getenv('service_name'), region_name=os.getenv(
+            'region_name'), aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
 
     def send_data(self, data, tableName):
         db = self.dynamo_client.Table(tableName)
@@ -25,12 +26,11 @@ class DynamoDB_con():
             data.extend(response['Items'])
         # print('total out put data: ',data)
         return data, len(data)
+    
     # def read_by_game(self, tableName,gameId):
 
     # def update_table(self,data,tableName):
     #     table = self.dynamo_client.Table(tableName)
-
-
     def get_words(self):
         table = self.dynamo_client.Table("TB_JumbledWord_bank")
         response = table.scan()
@@ -39,6 +39,18 @@ class DynamoDB_con():
             response = table.scan(
                 ExclusiveStartKey=response['LastEvaluatedKey'])
             data.extend(response['Items'])
-        # print('total out put data: ',data)
         return data, len(data)
         
+    def deleteTotalData(self,table_name='TB_Temp_JumbledWord_Session'):
+        flag = False
+        table = self.dynamo_client.Table(table_name)
+        scan = table.scan()
+        while not flag:
+            with table.batch_writer() as batch:
+                for each in scan['Items']:
+                    batch.delete_item(
+                                Key={
+                                'Id': each['Id']
+                                }
+                            )
+                flag = True

@@ -1,3 +1,6 @@
 pyTelegramBotAPI==4.8.0
 python-dotenv
 boto3
+schedule
+pyrogram
+gspread
