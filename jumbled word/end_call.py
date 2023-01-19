@@ -9,8 +9,7 @@ sessionData, totalSess = DB.read_read('TB_Temp_JumbledWord_Session')
 
 
 def UpdateTheData():
-    print('running')
-    print('sessionData: ', sessionData)
+    print('running set time function!')
 
     total_sum_points = {}
     for dic in sessionData:

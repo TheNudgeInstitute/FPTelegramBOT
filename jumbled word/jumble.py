@@ -298,7 +298,6 @@ def winner(message, r=True):
 
     li2 = li.copy()
     li.sort(reverse=True)
-    print(li, li2, name)
 
     firs = li2.index(li[0])
     first_name = name[li2.index(li[0])]
@@ -335,15 +334,6 @@ def winner(message, r=True):
                 Congratulations {first_name} 👏🎊Keep it up and practice more.!! 📚📚📚''',
                                  disable_notification=True,
                                  parse_mode='markdown')
-        else:
-            bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
-
-                🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-                Congratulations {first_name} 👏🎊Keep it up and practice more.!! 📚📚📚''',
-                             disable_notification=True,
-                             parse_mode='markdown')
-            print('ddddddddddsssssssssssssss#####')
     else:
         bot.send_message(chat_id, f''' Thank you for participating in today's  Jumble word Game!
                   👎🏻👎🏻👎🏻Oops there is no Winner! 👎🏻👎🏻👎🏻 
