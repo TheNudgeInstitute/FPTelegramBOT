@@ -123,7 +123,7 @@ def controleNextBtn(message, bool):
                         ErrorHandler(e)
                 else:
                     common.nextEditButton = bot.send_message(
-                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n Hey, word was: {common.gessWord}\nClick the button below for the next word 👇",
+                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n The word was: {common.gessWord}\nClick the button below for the next word 👇",
                         disable_notification=True,
                         reply_markup=keyboard,
                         parse_mode='markdown')
