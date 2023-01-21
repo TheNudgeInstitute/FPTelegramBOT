@@ -26,4 +26,4 @@ def UpdateTheData():
         data = {"User_id": str(dic), "date": str(datetime.datetime.now()), "JumbledWord_Points": str(
             total_sum_points[dic]['Points_Scored']), "JumbledWord_Participation": str(total_sum_points[dic]['JumbledWord_Participation'])}
         DB.send_data(data, 'TB_User_Points')
-    DB.deleteTotalData()
+    # DB.deleteTotalData()

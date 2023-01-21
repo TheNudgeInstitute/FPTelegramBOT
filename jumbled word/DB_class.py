@@ -12,8 +12,9 @@ class DynamoDB_con():
             'region_name'), aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
 
     def send_data(self, data, tableName):
-        db = self.dynamo_client.Table(tableName)
-        db.put_item(Item=data)
+        print(data)
+        # db = self.dynamo_client.Table(tableName)
+        # db.put_item(Item=data)
         print('Data is sending to the database!!!!')
 
     def read_read(self, tableName):

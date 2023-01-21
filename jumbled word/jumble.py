@@ -18,13 +18,7 @@ import end_call
 DB = DynamoDB_con()
 load_dotenv()  # loading the env file
 
-common.game_creater = {}
-common.participants = []
-common.scour_Dict = {}
-common.red_scour = {}
 
-
-game_time = datetime.datetime.now()
 common.nextEditButton = None
 common.last_Right_ans = ''
 
@@ -32,30 +26,32 @@ schedule.every().day.at("01:00").do(end_call.UpdateTheData)
 schedule.run_all()
 
 
-def restartGame():
-    common.joinFlag = True  # to block joining patrticipants after 60 seconds
-    common.chat_type = None
-    common.gameCounter = 0
-    common.game_creater = {}
-    common.participants = []
+def restartGame(message="True"):
     common.nextButtonCount = False
+    common.time_breaker = False
+    common.gameStarted = False  # to block creating new game if one is going on
+    common.nextFlag = False  # show or hide next button
+    common.joinFlag = True  # to block joining patrticipants after 60 seconds
     common.nextEditButton = None
     common.editJoinMsg = None
+    common.chat_type = None
     common.last_Right_ans = ''
-    common.nextFlag = False  # show or hide next button
     common.total_players = 0
-    common.time_breaker = False
+    common.gameCounter = 0
     common.wait60sec = 0  # waiting time for particiants to join the game (60)
+    common.runner = 0
     common.wait40sec = 40  # waiting time for particiants to join the game (60
     common.guessTime = 40  # waiting time to guess the word
     # variiiii
     common.sec60 = 60
     common.word = ''
-    common.used_words = []
-    common.scour_Dict = {}
-    common.runner = 0
+    common.participants = []
+    if (type(dict) == message):
+        del common.scour_Dict[message.from_user.id]
+    else:
+        common.scour_Dict = {}
+    common.game_creater = {}
     common.red_scour = {}
-    common.gameStarted = False  # to block creating new game if one is going on
 
 
 def ErrorHandler(er):
@@ -64,10 +60,10 @@ def ErrorHandler(er):
                      parse_mode='markdown'
                      )
 
+
 def delete_message(chat_id, message_id, sec=0):
-    # time.sleep(sec)
     bot.delete_message(chat_id, message_id)
-    # return True
+
 
 def controleNextBtn(message, bool):
     if common.gameCounter <= 10:
@@ -123,7 +119,7 @@ def controleNextBtn(message, bool):
                         ErrorHandler(e)
                 else:
                     common.nextEditButton = bot.send_message(
-                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n The word was: {common.gessWord}\nClick the button below for the next word 👇",
+                        common.chat_id, f"Oops.. you ran out of time. 🕐🕑🕒\n The word was: {common.gessWord}\n\nClick the button below for the next word 👇",
                         disable_notification=True,
                         reply_markup=keyboard,
                         parse_mode='markdown')
@@ -146,21 +142,23 @@ def alert(messageId, msg, show_alert=False):
 
 
 def genrate_sessionId():
+    ID = None
     sessionData, totalSess = DB.read_read('TB_Temp_JumbledWord_Session')
     f = True
 
     def generateFun():
-        common.sessionId = random.randrange(1000, 9999)
+        ID = random.randrange(1000, 9999)
         for dic in sessionData:
             print('dic: ', dic)
-            if common.sessionId == dic['sessionId']:
+            if ID == dic['sessionId']:
                 f = False
                 break
     while True:
         print('while:True')
         generateFun()
         if f:
-            break
+            return ID
+        
 
 
 def create_game(game, message, t=60):
@@ -183,11 +181,17 @@ def create_game(game, message, t=60):
                 chat_id, f"Let's start ⏳\nThis game will have 10 rounds",
                 parse_mode='markdown'
             )
-            genrate_sessionId()
+            sessionId = genrate_sessionId()
+            words         = []
+            data     = DB.get_words()
+            for dic in data:
+                words.append(dic['word'])
+            one_user_def_values = {"words": words, "chat_id": None, "gameStarted": 0, "joinFlag": True, "chat_type": None, "gameCounter": 0, "game_creater": {}, "participants": [], "nextButtonCount": False, "nextEditButton": None, "editJoinMsg": None,"last_Right_ans": "", "nextFlag": False, "total_players": 0, "time_breaker": False, "word": '', "runner": 0, "gessWord": '', "scour_Dict": {}, "red_scour": {}, "wait60sec": 60, "wait40sec": 40, "guessTime": 40, "todayDate": '', "sessionId": sessionId, "sec60": 60}
+            common.main_Dict_var[sessionId] = one_user_def_values
             bot.send_message(
                 chat_id, f'{first_name} joined. \n There is now {common.total_players} players')
             common.scour_Dict[message.from_user.id] = {
-                'points': 0, "user_name": message.from_user.first_name, 'sessionId': common.sessionId}
+                'points': 0, "user_name": message.from_user.first_name, 'sessionId': sessionId}
             # # creating thread for counter. students will get 60 seconds time to participate in jumble word game
             join_counter = threading.Thread(target=common.start_timer, args=(
                 'join-wait', t, 'join-jumble', common.editJoinMsg))  # joining button thread
@@ -219,14 +223,14 @@ def join_game(game, message, mode='auto', time=60):
         if (game == 'join-jumble'):
             first_name = message.from_user.first_name
 
-            if time == 0 and len(common.scour_Dict) == 1:
-                bot.send_message(
-                    chat_id, f'You need atleast 2 players to play this game !! \n \n \t Happy learning⬇',
-                    parse_mode='markdown'
-                )
-                # resetting all the valiables to default
-                restartGame()
-            elif time == 0 and common.gameCounter < 10:
+            # if time == 0 and len(common.scour_Dict) == 1:
+            #     bot.send_message(
+            #         chat_id, f'You need atleast 2 players to play this game !! \n \n \t Happy learning⬇',
+            #         parse_mode='markdown'
+            #     )
+            #     # resetting all the valiables to default
+            #     restartGame(message)
+            if time == 0 and common.gameCounter < 10:
                 common.time_breaker = True
                 if mode == 'auto':
                     bot.send_message(
@@ -235,7 +239,7 @@ def join_game(game, message, mode='auto', time=60):
                         parse_mode='markdown'
                     )
                 data = {"Datatime": str(datetime.datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
-                    common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants)}
+                    common.game_creater['InitiatedBy']), "JumbledWord_Participation": common.total_players}
 
                 DB.send_data(data, 'TB_JumbledWord_Engagement')
 
@@ -354,7 +358,7 @@ def winner(message, r=True):
         end_call.UpdateTheData()
         common.todayDate = today
     # resetting all the valiables to default
-    restartGame()
+    restartGame(message)
 
 
 print("Hi, Jumble here!\n\t", os.getenv('bot_username'))
@@ -368,12 +372,10 @@ def main():
         print(message.chat.type, '-> chat type', command)
         if command.startswith('/jumbleword') and not common.gameStarted:
             # storing game creator information
-            if common.joinFlag:
+            if common.joinFlag or not message.from_user.id in common.scour_Dict:
                 common.total_players += 1
                 common.game_creater = {
-                    "date": game_time,
-                    "InitiatedBy": message.from_user.id,
-                    "total_common.participants": 0
+                    "InitiatedBy": message.from_user.id
                 }
                 common.participants.append(message.from_user.id)
                 common.joinFlag = False

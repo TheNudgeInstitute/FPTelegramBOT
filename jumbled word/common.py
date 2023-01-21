@@ -6,37 +6,40 @@ from DB_class import DynamoDB_con
 
 DB = DynamoDB_con()
 
-data, l       = DB.get_words()
-words         = []
-for dic in data:
-    words.append(dic['word'])
-chat_id       = None
-gameStarted   = False  # to block creating new game if one is going on
-joinFlag      = True  # to block joining patrticipants after 60 seconds
-chat_type = None
-gameCounter   = 0  # count the how many word appearead in a particular game
-game_creater  = {}  # storing data of who initiated the game
-participants  = []  # storing data of joined participants in a particular game
-nextButtonCount = False  # decision for next word
-nextEditButton  = None  # storing current (Next Word) button data
-editJoinMsg     = None
-last_Right_ans  = ''  # storing name of user who guessed current word
-nextFlag        = False  # show or hide next button
-total_players   = 0  # counting total participants
-time_breaker    = False  # decision on breaking timer
-word            = ''
-runner          = 0
-used_words      = []
-gessWord        = ''
-scour_Dict      = {}
-wait60sec       = 0  # waiting time for particiants to join the game (60)
-wait40sec       = 40  # waiting time for particiants to join the game (60
-guessTime       = 40  # waiting time to guess the word
-todayDate       = ''
-sessionId = 0
+main_Dict_var = {}
 
-# variiiii
-sec60           = 60
+# data, l       = DB.get_words()
+# one_user_def_values = {"words":[],"chat_id":None,"gameStarted":0,"joinFlag":True,"chat_type":None,"gameCounter":0,"game_creater":{},"participants":[],"nextButtonCount":False,"nextEditButton":None,"editJoinMsg":None,"last_Right_ans":"","nextFlag":False,"total_players":0,"time_breaker":False,"word":'',"runner":0,"gessWord":'',"scour_Dict":{},"red_scour":{},"wait60sec":60,"wait40sec":40,"guessTime":40,"todayDate":'',"sessionId":0,"sec60":60}
+# words         = []
+# for dic in data:
+#     words.append(dic['word'])
+# chat_id       = None
+# gameStarted   = False  # to block creating new game if one is going on
+# joinFlag      = True  # to block joining patrticipants after 60 seconds
+# chat_type = None
+# gameCounter   = 0  # count the how many word appearead in a particular game
+# game_creater  = {}  # storing data of who initiated the game
+# participants  = []  # storing data of joined participants in a particular game
+# nextButtonCount = False  # decision for next word
+# nextEditButton  = None  # storing current (Next Word) button data
+# editJoinMsg     = None
+# last_Right_ans  = ''  # storing name of user who guessed current word
+# nextFlag        = False  # show or hide next button
+# total_players   = 0  # counting total participants
+# time_breaker    = False  # decision on breaking timer
+# word            = ''
+# runner          = 0
+# gessWord        = ''
+# scour_Dict      = {}
+# red_scour       = {}
+# wait60sec       = 0  # waiting time for particiants to join the game (60)
+# wait40sec       = 40  # waiting time for particiants to join the game (60
+# guessTime       = 40  # waiting time to guess the word
+# todayDate       = ''
+# sessionId = 0
+
+# # variiiii
+# sec60           = 60
 
 DB = DB_class.DynamoDB_con()
 
