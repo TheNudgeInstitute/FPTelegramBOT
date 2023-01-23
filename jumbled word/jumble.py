@@ -31,7 +31,6 @@ common.last_Right_ans = ''
 schedule.every().day.at("01:00").do(end_call.UpdateTheData)
 schedule.run_all()
 
-
 def restartGame():
     common.joinFlag = True  # to block joining patrticipants after 60 seconds
     common.chat_type = None
