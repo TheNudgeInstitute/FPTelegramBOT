@@ -290,55 +290,95 @@ def winner(message, r=True):
 
     print('total score!! : ', common.scour_Dict)
     li = []
-    name = []
+
     for ele in common.scour_Dict:
         li.append(common.scour_Dict[ele]['points'])
-        name.append(common.scour_Dict[ele]['user_name'])
 
-    li2 = li.copy()
     li.sort(reverse=True)
+    scoring = []
+    for num in li:
+        for dict in common.scour_Dict:
+            print(num,common.scour_Dict[dict]['points'])
+            if num == common.scour_Dict[dict]['points']:
+                scoring.append( [common.scour_Dict[dict]['user_name'],common.scour_Dict[dict]['points']])
+                del common.scour_Dict[dict]
+                break
+    print(scoring)
+    if len(scoring) == 2:
+        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
 
-    firs = li2.index(li[0])
-    first_name = name[li2.index(li[0])]
-    li.pop(0)
+            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
 
-    common.runner = 2
-    if li2[firs] != 0:
-        if len(common.scour_Dict) >= 2:
-            sec = li2.index(li[0])
-            sec_name = name[li2.index(li[0])]
-            li.pop(0)
-            if len(common.scour_Dict) >= 3:
-                thd = li2.index(li[0])
-                thd_name = name[li2.index(li[0])]
-                li.pop(0)
-                bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
 
-                🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-                🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
-
-                🥉 {thd_name} got {li2[thd]//2}/{common.gameCounter} Questions correct ⭐️
-
-                Congratulations {first_name} 👏🎊Keep it up and practice more. 📚📚📚''',
-                                 disable_notification=True,
-                                 parse_mode='markdown')
-            else:
-                bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
-
-                🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-                🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
-
-                Congratulations {first_name} 👏🎊Keep it up and practice more.!! 📚📚📚''',
-                                 disable_notification=True,
-                                 parse_mode='markdown')
+            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+            disable_notification=True,
+            parse_mode='markdown')
     else:
-        bot.send_message(chat_id, f''' Thank you for participating in today's  Jumble word Game!
-                  👎🏻👎🏻👎🏻Oops there is no Winner! 👎🏻👎🏻👎🏻 
-            Try to answer it and practice more. 📚📚📚''',
-                         disable_notification=True,
-                         parse_mode='markdown')
+        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+
+            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+
+            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+
+            🥉 {scoring[2][0]} got {scoring[2][1]//2}/{common.gameCounter} Questions correct ⭐️
+
+            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+            disable_notification=True,
+            parse_mode='markdown')
+
+    # li = []
+    # name = []
+    # for ele in common.scour_Dict:
+    #     li.append(common.scour_Dict[ele]['points'])
+    #     name.append(common.scour_Dict[ele]['user_name'])
+
+    # li2 = li.copy()
+    # li.sort(reverse=True)
+
+    # firs = li2.index(li[0])
+    # first_name = name[li2.index(li[0])]
+    # li.pop(0)
+
+    # print(common.scour_Dict)
+    # common.runner = 2
+
+    # if li2[firs] != 0:
+    #     if len(common.scour_Dict) >= 2:
+    #         sec = li2.index(li[0])
+    #         sec_name = name[li2.index(li[0])]
+    #         li.pop(0)
+    #         if len(common.scour_Dict) >= 3:
+    #             thd = li2.index(li[0])
+    #             thd_name = name[li2.index(li[0])]
+    #             print(li,li2,name)
+    #             bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+
+    #             🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+
+    #             🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+
+    #             🥉 {thd_name} got {li2[thd]//2}/{common.gameCounter} Questions correct ⭐️
+
+    #             Congratulations {first_name} 👏🎊Keep it up and practice more. 📚📚📚''',
+    #                              disable_notification=True,
+    #                              parse_mode='markdown')
+    #         else:
+    #             bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+
+    #             🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+
+    #             🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+
+    #             Congratulations {first_name} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+    #                              disable_notification=True,
+    #                              parse_mode='markdown')
+    # else:
+    #     bot.send_message(chat_id, f''' Thank you for participating in today's  Jumble word Game!
+    #               👎🏻👎🏻👎🏻Oops there is no Winner! 👎🏻👎🏻👎🏻 
+    #         Try to answer it and practice more. 📚📚📚''',
+    #                      disable_notification=True,
+    #                      parse_mode='markdown')
 
     for d in common.scour_Dict:
         t = time.time()
