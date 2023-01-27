@@ -1,0 +1,11 @@
+# Python Virtual Environment
+venv/
+
+# IDE Files
+.idea/
+
+# Environment Variables
+.env
+
+# Log File
+nohup.out

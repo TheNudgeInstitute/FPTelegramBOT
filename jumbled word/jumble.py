@@ -290,6 +290,7 @@ def winner(message, r=True):
         chat_id = common.chat_id
 
     print('total score!! : ', common.scour_Dict)
+
     pointsList = []
     for ele in common.scour_Dict:
         pointsList.append(common.scour_Dict[ele]['points'])
@@ -334,6 +335,43 @@ def winner(message, r=True):
             🥈 {tot[1]}/{common.gameCounter} Questions correct ⭐️⭐️'''
         elif len(tot) == 3:
             total_str += f"\n\n\t🥉 {tot[2]}/{common.gameCounter} Questions correct ⭐️"
+    li = []
+
+    for ele in common.scour_Dict:
+        li.append(common.scour_Dict[ele]['points'])
+
+    li.sort(reverse=True)
+    scoring = []
+    for num in li:
+        for dict in common.scour_Dict:
+            print(num,common.scour_Dict[dict]['points'])
+            if num == common.scour_Dict[dict]['points']:
+                scoring.append( [common.scour_Dict[dict]['user_name'],common.scour_Dict[dict]['points']])
+                del common.scour_Dict[dict]
+                break
+    print(scoring)
+    if len(scoring) == 2:
+        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+
+            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+
+            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+
+            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+            disable_notification=True,
+            parse_mode='markdown')
+    else:
+        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
+
+            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+
+            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+
+            🥉 {scoring[2][0]} got {scoring[2][1]//2}/{common.gameCounter} Questions correct ⭐️
+
+            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+            disable_notification=True,
+            parse_mode='markdown')
 
     total_str += f'\n\nCongratulations {tot[0]} 👏🎊Keep it up and practice more.!! 📚📚📚'
     bot.send_message(chat_id,total_str,
