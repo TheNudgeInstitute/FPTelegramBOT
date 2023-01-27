@@ -215,6 +215,7 @@ def join_game(game, message, mode='auto', time=60):
     if not (skip):
         global current_word_Message
         user_id = message.from_user.id
+        
         if (game == 'join-jumble'):
             first_name = message.from_user.first_name
 
@@ -289,97 +290,57 @@ def winner(message, r=True):
         chat_id = common.chat_id
 
     print('total score!! : ', common.scour_Dict)
-    li = []
-
+    pointsList = []
     for ele in common.scour_Dict:
-        li.append(common.scour_Dict[ele]['points'])
+        pointsList.append(common.scour_Dict[ele]['points'])
 
-    li.sort(reverse=True)
+    pointsList.sort(reverse=True)
+
     scoring = []
-    for num in li:
+    for num in pointsList:
         for dict in common.scour_Dict:
-            print(num,common.scour_Dict[dict]['points'])
             if num == common.scour_Dict[dict]['points']:
-                scoring.append( [common.scour_Dict[dict]['user_name'],common.scour_Dict[dict]['points']])
+                scoring.append([common.scour_Dict[dict]['user_name'],
+                            common.scour_Dict[dict]['points']])
                 del common.scour_Dict[dict]
                 break
-    print(scoring)
-    if len(scoring) == 2:
-        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
 
-            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
+    top_points = {}
+    for sub in scoring:
+        if sub[1] not in top_points:
+            top_points[sub[1]] = [sub[0]]
+        else:
+            top_points[sub[1]].append(sub[0])
 
-            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
+    print(top_points)
 
-            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
+    tot = []
+    total_str = " Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\n"
+    for key in top_points:
+        names = ""
+        for name in top_points[key]:
+            names += name + ", "
+        if names.count(',') > 1:
+            tot.append(names+"got's "+str(key//2))
+        else:
+            tot.append(names+"got "+str(key//2))
+
+        if len(tot) == 1:
+            total_str += f"\t🥇 {tot[0]}/{common.gameCounter} Questions correct ⭐️⭐️⭐️"
+
+        elif len(tot) == 2:
+            total_str += f'''
+
+            🥈 {tot[1]}/{common.gameCounter} Questions correct ⭐️⭐️'''
+        elif len(tot) == 3:
+            total_str += f"\n\n\t🥉 {tot[2]}/{common.gameCounter} Questions correct ⭐️"
+
+    total_str += f'\n\nCongratulations {tot[0]} 👏🎊Keep it up and practice more.!! 📚📚📚'
+    bot.send_message(chat_id,total_str,
             disable_notification=True,
             parse_mode='markdown')
-    else:
-        bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
-
-            🥇 {scoring[0][0]} got {scoring[0][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-            🥈 {scoring[1][0]} got {scoring[1][1]//2}/{common.gameCounter} Questions correct ⭐️⭐️
-
-            🥉 {scoring[2][0]} got {scoring[2][1]//2}/{common.gameCounter} Questions correct ⭐️
-
-            Congratulations {scoring[0][0]} 👏🎊Keep it up and practice more.!! 📚📚📚''',
-            disable_notification=True,
-            parse_mode='markdown')
-
-    # li = []
-    # name = []
-    # for ele in common.scour_Dict:
-    #     li.append(common.scour_Dict[ele]['points'])
-    #     name.append(common.scour_Dict[ele]['user_name'])
-
-    # li2 = li.copy()
-    # li.sort(reverse=True)
-
-    # firs = li2.index(li[0])
-    # first_name = name[li2.index(li[0])]
-    # li.pop(0)
-
-    # print(common.scour_Dict)
-    # common.runner = 2
-
-    # if li2[firs] != 0:
-    #     if len(common.scour_Dict) >= 2:
-    #         sec = li2.index(li[0])
-    #         sec_name = name[li2.index(li[0])]
-    #         li.pop(0)
-    #         if len(common.scour_Dict) >= 3:
-    #             thd = li2.index(li[0])
-    #             thd_name = name[li2.index(li[0])]
-    #             print(li,li2,name)
-    #             bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
-
-    #             🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-    #             🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
-
-    #             🥉 {thd_name} got {li2[thd]//2}/{common.gameCounter} Questions correct ⭐️
-
-    #             Congratulations {first_name} 👏🎊Keep it up and practice more. 📚📚📚''',
-    #                              disable_notification=True,
-    #                              parse_mode='markdown')
-    #         else:
-    #             bot.send_message(chat_id, f''' Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉
-
-    #             🥇 {first_name} got {li2[firs]//2}/{common.gameCounter} Questions correct ⭐️⭐️⭐️
-
-    #             🥈 {sec_name} got {li2[sec]//2}/{common.gameCounter} Questions correct ⭐️⭐️
-
-    #             Congratulations {first_name} 👏🎊Keep it up and practice more.!! 📚📚📚''',
-    #                              disable_notification=True,
-    #                              parse_mode='markdown')
-    # else:
-    #     bot.send_message(chat_id, f''' Thank you for participating in today's  Jumble word Game!
-    #               👎🏻👎🏻👎🏻Oops there is no Winner! 👎🏻👎🏻👎🏻 
-    #         Try to answer it and practice more. 📚📚📚''',
-    #                      disable_notification=True,
-    #                      parse_mode='markdown')
-
+    print(total_str)
+    
     for d in common.scour_Dict:
         t = time.time()
         t_ms = int(t * 1000)
@@ -485,7 +446,6 @@ def main():
                 join_game('join-jumble', option, 'mannual', 0)
 
     bot.polling(none_stop=True)
-
 
 if __name__ == "__main__":
     main()
