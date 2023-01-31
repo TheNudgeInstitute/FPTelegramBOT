@@ -92,7 +92,6 @@ def create_game(message):
 
 
 def join_game(option):
-    # TODO Enable Check
     if option.from_user.id in common.PARTICIPANT_MAP:
         # TODO Add Handler for Already Joined User
         return
