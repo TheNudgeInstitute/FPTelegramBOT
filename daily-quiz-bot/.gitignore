@@ -1,0 +1,15 @@
+### dotenv ###
+.env
+
+# Environments
+venv/
+
+# PyCharm
+.idea/
+
+# Custom Scripts
+script.py
+test.py
+
+# System Files
+.DS_Store
