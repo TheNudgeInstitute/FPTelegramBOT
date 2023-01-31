@@ -31,9 +31,10 @@ def end_game(chat_id):
     common.ROUND = 0
     common.PARTICIPANT_MAP = {}
     common.PARTICIPANTS = []
-    print(common.STORY)
-    send_story(chat_id, "\n".join(common.STORY))
-    common.STORY = []
+    if common.STORY:
+        print(common.STORY)
+        send_story(chat_id, "\n".join(common.STORY))
+        common.STORY = []
     print('=== GAME END ===')
 
 
@@ -111,8 +112,8 @@ def join_game(option):
 def start_game(chat_id):
     if len(common.PARTICIPANTS) < common.MIN_PARTICIPANTS:
         send_false_start_message(chat_id)
-        common.IS_ACTIVE = False
         common.JOIN_MODE = False
+        end_game(None)
         return
     # Start Game
     common.JOIN_MODE = False
