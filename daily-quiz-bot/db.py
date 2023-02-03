@@ -39,7 +39,8 @@ class Database:
         self.quiz_polls.put_item(Item=poll)
 
     def get_active_polls(self):
-        return self.quiz_polls.scan()['Items']
+        response = self.quiz_polls.scan()
+        return response['Items'] if 'Items' in response else []
 
     def update_poll_status(self, poll):
         self.quiz_polls.delete_item(Key={'poll_id': poll['poll_id']})

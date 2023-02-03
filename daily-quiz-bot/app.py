@@ -4,8 +4,8 @@ from datetime import datetime, timedelta
 from apscheduler.schedulers.background import BackgroundScheduler
 from flask import Flask, request
 
-from bot import send_poll, stop_poll, send_message
 from db import Database
+from bot import send_poll, stop_poll, send_message
 from update import process_updates
 
 app = Flask(__name__)
@@ -85,23 +85,26 @@ def process_poll_answers(poll_map, quiz_no):
     user_answers = dict()
 
     for update in updates:
-        poll_answer = update['poll_answer']
-        poll = poll_map[poll_answer.get('poll_id')]
+        try:
+            poll_answer = update['poll_answer']
+            poll = poll_map[poll_answer.get('poll_id')]
 
-        selected_option = poll_answer.get('option_ids')[0]
-        score = int(poll.get('correct_option_id') == selected_option)  # 1 or 0
+            selected_option = poll_answer.get('option_ids')[0]
+            score = int(poll.get('correct_option_id') == selected_option)  # 1 or 0
 
-        question_index = int(poll['question_no'] - 1)
-        engagement[question_index] += 1
-        correct_answers[question_index] += score
+            question_index = int(poll['question_no'] - 1)
+            engagement[question_index] += 1
+            correct_answers[question_index] += score
 
-        user_id = str(poll_answer.get('user').get('id'))
-        if user_id not in user_answers:
-            user_answers[user_id] = {
-                'scores': [0] * 5,
-                'user': poll_answer.get('user')
-            }
-        user_answers[user_id]['scores'][question_index] += score
+            user_id = str(poll_answer.get('user').get('id'))
+            if user_id not in user_answers:
+                user_answers[user_id] = {
+                    'scores': [0] * 5,
+                    'user': poll_answer.get('user')
+                }
+            user_answers[user_id]['scores'][question_index] += score
+        except Exception as e:
+            print(e)
 
     DB.put_quiz_engagement(quiz_no, engagement, correct_answers)
     DB.put_quiz_session(quiz_no, user_answers)
