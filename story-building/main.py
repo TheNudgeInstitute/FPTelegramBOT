@@ -33,7 +33,10 @@ def end_game(chat_id):
     common.PARTICIPANTS = []
     if common.STORY:
         print(common.STORY)
-        send_story(chat_id, "\n".join(common.STORY))
+        if len(common.STORY > 1):
+            send_story(chat_id, "\n".join(common.STORY))
+        else:
+            send_false_start_message(chat_id)
         common.STORY = []
     print('=== GAME END ===')
 

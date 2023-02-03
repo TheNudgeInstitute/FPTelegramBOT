@@ -13,8 +13,8 @@ class Database:
                                             aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
 
     def send_data(self, data, table_name):
-        db = self.dynamo_client.Table(table_name)
-        db.put_item(Item=data)
+        table = self.dynamo_client.Table(table_name)
+        table.put_item(Item=data)
 
     def get_prompts(self):
         table = self.dynamo_client.Table("TB_StoryBuilding_Bank")
