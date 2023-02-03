@@ -6,6 +6,7 @@ from flask import Flask, request
 
 from bot import send_poll, stop_poll, send_message
 from db import Database
+from update import process_updates
 
 app = Flask(__name__)
 DB = Database()
@@ -66,34 +67,44 @@ def end_quiz(quiz_no):
     with app.app_context():
         print("ending quiz", quiz_no)
         polls = DB.get_active_polls()
+        poll_map = {poll['poll_id']: poll for poll in polls}
+
         for poll in polls:
             stop_poll(poll.get('message_id'))
+        process_poll_answers(poll_map, quiz_no)
+
+        for poll in polls:
             DB.update_poll_status(poll)
         print("ended quiz", quiz_no)
         return leaderboad(quiz_no)
 
 
-@app.route('/webhook-poll-answer', methods=['POST'])
-def process_poll_answer_update():
-    update = request.json
-    if 'poll_answer' not in update:
-        # Don't process other updates
-        return '', 204
+def process_poll_answers(poll_map, quiz_no):
+    updates = process_updates()
+    engagement, correct_answers = [0] * 5, [0] * 5
+    user_answers = dict()
 
-    poll_answer = update['poll_answer']
-    poll = DB.get_poll(poll_answer.get('poll_id'))
+    for update in updates:
+        poll_answer = update['poll_answer']
+        poll = poll_map[poll_answer.get('poll_id')]
 
-    selected_option = poll_answer.get('option_ids')[0]
-    score = int(poll.get('correct_option_id') == selected_option)  # 1 or 0
+        selected_option = poll_answer.get('option_ids')[0]
+        score = int(poll.get('correct_option_id') == selected_option)  # 1 or 0
 
-    DB.update_quiz_engagement(poll.get('quiz_no'),
-                              poll.get('question_no'),
-                              score)
-    DB.update_quiz_session(poll.get('quiz_no'),
-                           poll.get('question_no'),
-                           poll_answer.get('user'),
-                           score)
-    return '', 200
+        question_index = int(poll['question_no'] - 1)
+        engagement[question_index] += 1
+        correct_answers[question_index] += score
+
+        user_id = str(poll_answer.get('user').get('id'))
+        if user_id not in user_answers:
+            user_answers[user_id] = {
+                'scores': [0] * 5,
+                'user': poll_answer.get('user')
+            }
+        user_answers[user_id]['scores'][question_index] += score
+
+    DB.put_quiz_engagement(quiz_no, engagement, correct_answers)
+    DB.put_quiz_session(quiz_no, user_answers)
 
 
 @app.route('/send-leaderboard', methods=['GET'])
@@ -123,4 +134,5 @@ def leaderboad(quiz_no):
 
 
 if __name__ == '__main__':
+    print("Started English Quiz Bot")
     app.run()

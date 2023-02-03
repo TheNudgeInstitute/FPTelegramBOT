@@ -34,15 +34,6 @@ class Database:
         self.quiz_bank.update_item(Key={'quiz_no': quiz['quiz_no']},
                                    UpdateExpression='SET posted = :p',
                                    ExpressionAttributeValues={':p': b'1'})
-        # Create quiz engagement
-        n = len(quiz.get('questions'))
-        engagement = {
-            'quiz_no': quiz['quiz_no'],
-            'timestamp': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
-            'engagement': [0] * n,
-            'correct_answers': [0] * n
-        }
-        self.quiz_engagement.put_item(Item=engagement)
 
     def add_poll(self, poll):
         self.quiz_polls.put_item(Item=poll)
@@ -53,36 +44,28 @@ class Database:
     def update_poll_status(self, poll):
         self.quiz_polls.delete_item(Key={'poll_id': poll['poll_id']})
 
-    def get_poll(self, poll_id):
-        response = self.quiz_polls.get_item(Key={'poll_id': poll_id})
-        print(response)
-        return response['Item']
+    def put_quiz_engagement(self, quiz_no, engagement, correct_answers):
+        engagement = {
+            'quiz_no': quiz_no,
+            'timestamp': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
+            'engagement': engagement,
+            'correct_answers': correct_answers
+        }
+        self.quiz_engagement.put_item(Item=engagement)
 
-    def update_quiz_engagement(self, quiz_no, question_no, score):
-        question_index = question_no - 1
-        update_expression = f'SET engagement[{question_index}] = engagement[{question_index}] + :val1, ' \
-                            f'correct_answers[{question_index}] = correct_answers[{question_index}] + :val2'
-        self.quiz_engagement.update_item(Key={'quiz_no': quiz_no},
-                                         UpdateExpression=update_expression,
-                                         ExpressionAttributeValues={':val1': 1, ':val2': score})
-
-    def update_quiz_session(self, quiz_no, question_no, user, score):
-        user_id = str(user.get('id'))
-        response = self.quiz_session.get_item(Key={'quiz_no': quiz_no, 'user_id': user_id})
-        if 'Item' not in response:
-            # if user response does not exist for quiz
-            session = {
+    def put_quiz_session(self, quiz_no, user_answers):
+        sessions = list()
+        for user_id, user_answer in user_answers.items():
+            sessions.append({
                 'quiz_no': quiz_no,
                 'user_id': user_id,
-                'user': user,
-                'scores': [0] * 5
-            }
-            self.quiz_session.put_item(Item=session)
+                'user': user_answer.get('user'),
+                'scores': user_answer.get('scores')
+            })
 
-        question_index = question_no - 1
-        self.quiz_session.update_item(Key={'quiz_no': quiz_no, 'user_id': user_id},
-                                      UpdateExpression=f'SET scores[{question_index}] = :val',
-                                      ExpressionAttributeValues={':val': score})
+        with self.quiz_session.batch_writer() as batch:
+            for session in sessions:
+                batch.put_item(Item=session)
 
     def get_quiz_results(self, quiz_no):
         response = self.quiz_session.query(KeyConditionExpression=Key('quiz_no').eq(quiz_no))
