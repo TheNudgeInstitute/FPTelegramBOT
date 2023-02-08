@@ -15,13 +15,13 @@ if 'TB_JumbledWord_Engagement' not in existing_tables:
         TableName='TB_JumbledWord_Engagement',
         KeySchema=[
             {
-                'AttributeName': 'JumbledWord_InitiatedByUser_ID',
+                'AttributeName': 'Datatime',
                 'KeyType': 'HASH'  # Partition key
             }
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'JumbledWord_InitiatedByUser_ID',
+                'AttributeName': 'Datatime',
                 'AttributeType': 'S'
             }
         ],
