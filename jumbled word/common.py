@@ -43,7 +43,6 @@ DB = DB_class.DynamoDB_con()
 def get_jumble():
     try:
         global word, gameCounter, runner, gessWord
-        # words = ['furze', 'fuses', 'fusee', 'fused', 'fusel', 'fuser', 'fussy', 'gales', 'galls', 'gamba', 'gamer', 'gamin']
         word = random.choices(words)[0].upper()
         jumble = ' '.join(random.sample(word, len(word)))
         jumbled = ''
