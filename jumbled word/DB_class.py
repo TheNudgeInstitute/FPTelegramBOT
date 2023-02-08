@@ -50,7 +50,7 @@ class DynamoDB_con():
                 for each in scan['Items']:
                     batch.delete_item(
                                 Key={
-                                'Id': each['Id']
+                                'ID': each['ID']
                                 }
                             )
                 flag = True
