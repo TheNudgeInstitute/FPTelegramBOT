@@ -1,10 +1,9 @@
 import threading
-import time
-from datetime import datetime
 import os
 import time
 import telebot
 from datetime import date
+from datetime import datetime
 import schedule
 import random
 
@@ -237,11 +236,7 @@ def join_game(game, message, mode='auto', time=60):
                 total_users_id = ""
                 for i in common.scour_Dict:
                     total_users_id+= str(i)+','
-                #  data = {"ID": str(datetime.today() .timestamp()).replace('.', ''),"Datatime": str(datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
-                #         common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants)}
-                
-                # # DB.send_data(data, 'JumbledWord_Engagement')
-                
+
                 data = {"Datatime": str(datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
                     common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants),"participants_ids":total_users_id}
                 DB.send_data(data, 'TB_JumbledWord_Engagement')
@@ -303,6 +298,12 @@ def winner(message, r=True):
 
     pointsList.sort(reverse=True)
 
+    for d in common.scour_Dict:
+        data = {"ID": str(datetime.today() .timestamp()).replace('.', ''), "Datetime": str(datetime.now()), "User_Id": str(
+            d), "Points_Scored": str(common.scour_Dict[d]['points']), "sessionId": common.scour_Dict[d]['sessionId']}
+        print(data,'<<<<<<<<<<<<<<<<<<<<<<<<<')
+        DB.send_data(data, 'TB_Temp_JumbledWord_Session')
+
     scoring = []
     for num in pointsList:
         for dict in common.scour_Dict:
@@ -345,21 +346,8 @@ def winner(message, r=True):
     bot.send_message(chat_id,total_str,
             disable_notification=True,
             parse_mode='markdown')
-    print(total_str)
 
-    for d in common.scour_Dict:
-        t = time.time()
-        t_ms = int(t * 1000)
-        data = {"Id": str(t_ms), "Datetime": str(datetime.now()), "User_Id": str(
-            d), "Points_Scored": str(common.scour_Dict[d]['points']), "sessionId": common.scour_Dict[d]['sessionId']}
-        DB.send_data(data, 'TB_Temp_JumbledWord_Session')
-    today = str(date.today())
-    print('one time run in a one day!!', today == common.todayDate)
-    if today == common.todayDate:
-        print(today)
-        end_call.UpdateTheData()
-        common.todayDate = today
-    # resetting all the valiables to default
+
     restartGame()
 print("Hi, Jumble here!\n\t", os.getenv('bot_username'))
 bot = telebot.TeleBot(os.getenv('API_KEY'))
