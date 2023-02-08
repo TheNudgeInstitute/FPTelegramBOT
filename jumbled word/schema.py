@@ -125,13 +125,13 @@ if "TB_Temp_JumbledWord_Session" not in existing_tables:
         TableName='TB_Temp_JumbledWord_Session',
         KeySchema=[
             {
-                'AttributeName': 'Id',
+                'AttributeName': 'ID',
                 'KeyType': 'HASH'
             }
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'Id',
+                'AttributeName': 'ID',
                 'AttributeType': 'S'
             }
         ],
