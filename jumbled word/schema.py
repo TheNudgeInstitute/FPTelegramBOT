@@ -15,13 +15,21 @@ if 'TB_JumbledWord_Engagement' not in existing_tables:
         TableName='TB_JumbledWord_Engagement',
         KeySchema=[
             {
-                'AttributeName': 'Datatime',
+                'AttributeName': 'Date',
                 'KeyType': 'HASH'  # Partition key
-            }
+            },
+            {
+                'AttributeName': 'Datetime',
+                'KeyType': 'RANGE'  # Partition key
+            },
         ],
         AttributeDefinitions=[
             {
-                'AttributeName': 'Datatime',
+                'AttributeName': 'Date',
+                'AttributeType': 'S'
+            },
+            {
+                'AttributeName': 'Datetime',
                 'AttributeType': 'S'
             }
         ],
@@ -31,6 +39,7 @@ if 'TB_JumbledWord_Engagement' not in existing_tables:
         }
     )
     print('create table JumbledWord_Engagement')
+
 
 if "TB_User_Master" not in existing_tables:
     dynamodb.create_table(

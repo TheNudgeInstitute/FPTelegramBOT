@@ -27,8 +27,8 @@ game_time = datetime.now()
 common.nextEditButton = None
 common.last_Right_ans = ''
 
-schedule.every().day.at("01:00").do(end_call.UpdateTheData)
-schedule.run_all()
+# schedule.every().day.at("01:00").do(end_call.UpdateTheData)
+# schedule.run_all()
 
 def restartGame():
     common.joinFlag = True  # to block joining patrticipants after 60 seconds
@@ -232,14 +232,15 @@ def join_game(game, message, mode='auto', time=60):
                         disable_notification=True,
                         parse_mode='markdown'
                     )
-                print(common.scour_Dict)
-                total_users_id = ""
-                for i in common.scour_Dict:
-                    total_users_id+= str(i)+','
-
-                data = {"Datatime": str(datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
-                    common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants),"participants_ids":total_users_id}
-                DB.send_data(data, 'TB_JumbledWord_Engagement')
+                    print(common.scour_Dict)
+                    total_users_id = ""
+                    for i in common.scour_Dict:
+                        total_users_id+= str(i)+','
+                    
+                    data = {"Date":str(date.today()),"Datetime": str(datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
+                        common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants),"participants_ids":total_users_id}
+                    
+                    DB.send_data(data, 'TB_JumbledWord_Engagement')
 
                 if common.runner == 0 or common.runner == 3:
 
@@ -346,12 +347,10 @@ def winner(message, r=True):
     bot.send_message(chat_id,total_str,
             disable_notification=True,
             parse_mode='markdown')
-
-
     restartGame()
+    
 print("Hi, Jumble here!\n\t", os.getenv('bot_username'))
 bot = telebot.TeleBot(os.getenv('API_KEY'))
-
 
 def main():
     @bot.message_handler(commands=['jumbleword'])
