@@ -15,16 +15,15 @@ class DynamoDB_con():
         db = self.dynamo_client.Table(tableName)
         db.put_item(Item=data)
         print('Data is sending to the database!!!!')
-    def read_data(self, tableName,queryDate):
+    def read_data(self, tableName,keyValue,queryValue):
         table = self.dynamo_client.Table(tableName)
-        response = table.query(KeyConditionExpression=Key('Date').eq(queryDate))
+        response=table.query(KeyConditionExpression=Key(keyValue).eq(queryValue))
         data = response['Items']
         while 'LastEvaluatedKey' in response:
             response = table.scan(
                 ExclusiveStartKey=response['LastEvaluatedKey'])
             data.extend(response['Items'])
         return data
-    
     def deleteTotalData(self,table_name):
         flag = False
         table = self.dynamo_client.Table(table_name)

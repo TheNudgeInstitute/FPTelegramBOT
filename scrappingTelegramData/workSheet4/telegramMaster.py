@@ -57,6 +57,9 @@ async def main():
                     JWB_initiatedCount=JWB_initiatedCount+1   
                 userSet.add(message[typeOfUser].get('id'))
                 messageList.append(message)
+            if 'caption' in message:
+                userSet.add(message[typeOfUser].get('id'))
+                messageList.append(message)
 
 # Column for OFFLINE and ONLINE can also be add
 app.run(main())
@@ -95,6 +98,6 @@ print('Data from Telegram_Master_DB')
 # PUSHING to SHEET
 gc = gspread.service_account(filename=os.path.join(os.getcwd() +'/secret-key.json'))
 sh = gc.open_by_key(os.getenv('SHEET_ID'))
-worksheet = sh.get_worksheet(4)
+worksheet = sh.get_worksheet(5)
 worksheet.append_row(rowData)
 print('scrapping in workSheet4 done, successfully')

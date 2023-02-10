@@ -1,17 +1,16 @@
 import sys,os
 from dotenv import load_dotenv
 load_dotenv()
-from pyrogram import enums
-from pyrogram import Client
 import datetime
-import gspread
-import time
-
 import json
+import time
+import gspread
+import re
+from pyrogram import Client, enums
 sys.path.append(os.getcwd())
 from db.db_model import DynamoDB_con
 DB = DynamoDB_con()
-import re
+
 app = Client(
     "YOUR_BOT",
     api_id = os.getenv('API_ID'),
@@ -24,9 +23,22 @@ userList=[]
 messageList_ID=[]
 wordOfTheDay='NO_WORD_YET'
 userMap={
-    -1001636582068:[yesterday.strftime("%x"),-1001636582068,0,'N',0,0,0,0,'NOT_AVAILABLE','NOT_AVAILABLE']
+    -1001636582068:[yesterday.strftime("%x"),-1001636582068,0,'N',0,0,0,0,0,0,'NOT_AVAILABLE','NOT_AVAILABLE']
     }
 useFullMessage=[]
+jwb_data=[]
+
+def refactor(obj):
+    print(obj)
+    JumbledWord_InitiatedByUser_ID=int(obj['JumbledWord_InitiatedByUser_ID'])
+    participants=obj['participants_ids'][:-1].split(',')
+    if JumbledWord_InitiatedByUser_ID in userMap:
+        userMap[JumbledWord_InitiatedByUser_ID][6]=userMap[JumbledWord_InitiatedByUser_ID][6]+1
+    for el in participants:
+        participant=int(el)
+        if participant in userMap:
+            userMap[participant][7]=userMap[participant][7]+1
+    return 0
 
 def checkValid(i, arr):
     user_id=0
@@ -63,9 +75,10 @@ async def main():
     async with app:
         async for member in app.get_chat_members(TARGET):
             member=json.loads(str(member))
-            messageList_ID.append(member['user'].get('id'))
+            userID=member['user'].get('id')                
+            messageList_ID.append(userID)
         for id in messageList_ID:
-            userMap[id]=[yesterday.strftime("%x"),id,0,'N',0,0,0,0,'NOT_AVAILABLE','NOT_AVAILABLE']
+            userMap[id]=[yesterday.strftime("%x"),id,0,'N',0,0,0,0,0,0,'NOT_AVAILABLE','NOT_AVAILABLE']
         
         async for message in app.get_chat_history(TARGET): 
             if(message.date.date()>yesterday):
@@ -97,15 +110,7 @@ async def main():
                 # No._WCB_Initiated
                 if 'text' in message and '/start' in message['text'] and '@on9wordchainbot' in message['text']:
                     useFullMessage.append(message)
-                    
-                
-                # Same logic as above two will be applied for JW bot
-                
-                # if wordOfTheDay is 'loream_ipsum_dolar_sit':
-                #      write logic to get word of the day
-                # else:
-                #     write logic to find if user userd wordOfTheDay
-                
+
                 # MessageCount
                 if user_id in userMap:
                     userMap[user_id][2]=userMap[user_id][2]+1
@@ -124,11 +129,18 @@ async def main():
             i,result,user_id=checkValid(i,useFullMessage)
             if result:
                 userMap[user_id][4]=userMap[user_id][4]+1
-            
+         
+        # to get JWB data
+        yesterday_str=yesterday.strftime('%Y-%m-%d')
+        jwb_data=DB.read_data('TB_JumbledWord_Engagement','Date',yesterday_str)
+        for el in jwb_data:
+            refactor(el)
+        
 app.run(findWod())
 app.run(main())
 
 userList=list(userMap.values())
+
 # PUSHING to JSON
 # with open(os.path.join(cur_path, 'userData.json'), "w") as file:
 #     json.dump(userList, file,indent=4)
@@ -151,9 +163,10 @@ for el in userList:
     DB.send_data(dataFormat,'ST_User_Data')
 print('Data from User_Data_DB')
 
-# PUSHING to SHEET
+# # PUSHING to SHEET
 gc = gspread.service_account(filename=os.path.join(os.getcwd() +'/secret-key.json'))
 sh = gc.open_by_key(os.getenv('SHEET_ID'))
-worksheet = sh.get_worksheet(3)
+worksheet = sh.get_worksheet(4)
 worksheet.append_rows(userList)
 print('scrapping in workSheet3 done, successfully')
+

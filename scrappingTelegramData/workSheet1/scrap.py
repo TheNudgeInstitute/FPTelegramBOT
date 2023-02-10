@@ -30,7 +30,7 @@ async def scrap():
                 break
             global messageCount,botInitiatedCount
             message=json.loads(str(message))
-            if('text' in message):
+            if('text' in message or 'caption' in message):
                 messageTime=message['date'].split(" ")[1]
                 messageHour=int(messageTime.split(":")[0])
                 useFull[(messageHour+17)%24]=useFull[(messageHour+17)%24]+1
@@ -92,6 +92,6 @@ print('Data from Content_Analysis_DB')
 # PUSHING LOGIC
 gc = gspread.service_account(filename=os.path.join(os.getcwd() +'/secret-key.json'))
 sh = gc.open_by_key(os.getenv('SHEET_ID'))
-worksheet = sh.get_worksheet(1)
+worksheet = sh.get_worksheet(2)
 worksheet.append_row(useFull)
 print('scrapping in workSheet1 done, successfully')
