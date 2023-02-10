@@ -115,11 +115,12 @@ def start_game(chat_id):
     if len(common.PARTICIPANTS) < common.MIN_PARTICIPANTS:
         send_false_start_message(chat_id)
         common.JOIN_MODE = False
+        utils.publish_game_data(False)
         end_game(None)
         return
     # Start Game
     common.JOIN_MODE = False
-    utils.publish_game_data()
+    utils.publish_game_data(True)
     time.sleep(5)  # To allow join messages to complete
     print('=== GAME START ===')
     common.CURRENT_PARTICIPANT_INDEX = 0

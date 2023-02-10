@@ -13,12 +13,15 @@ def get_current_user_id():
     return common.PARTICIPANTS[common.CURRENT_PARTICIPANT_INDEX]
 
 
-def publish_game_data():
+def publish_game_data(success: bool):
     try:
+        timestamp = datetime.now(ZoneInfo('Asia/Kolkata'))
         data = {
-            'timestamp': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
+            'timestamp': timestamp.isoformat(),
+            'date': timestamp.strftime('%Y-%m-%d'),
             'user_id': common.PARTICIPANTS[0],
-            'n_participants': len(common.PARTICIPANTS)
+            'n_participants': len(common.PARTICIPANTS),
+            'success': success
         }
         common.DB.send_data(data, 'TB_StoryBuilding_Data')
     except:
