@@ -78,7 +78,7 @@ class Database:
 
         score_map = defaultdict(list)
         for item in items:
-            total_score = sum(item['scores'])
+            total_score = sum(filter(None, item['scores']))
             user = item['user']
             score_map[total_score].append(
                 '@' + user.get('username') if user.get('username') else user.get('first_name', ''))

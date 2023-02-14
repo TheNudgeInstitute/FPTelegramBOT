@@ -99,10 +99,10 @@ def process_poll_answers(poll_map, quiz_no):
             user_id = str(poll_answer.get('user').get('id'))
             if user_id not in user_answers:
                 user_answers[user_id] = {
-                    'scores': [0] * 5,
+                    'scores': [None] * 5,
                     'user': poll_answer.get('user')
                 }
-            user_answers[user_id]['scores'][question_index] += score
+            user_answers[user_id]['scores'][question_index] = score
         except Exception as e:
             print(e)
 
