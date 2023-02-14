@@ -21,7 +21,8 @@ def publish_game_data(success: bool):
             'date': timestamp.strftime('%Y-%m-%d'),
             'user_id': common.PARTICIPANTS[0],
             'n_participants': len(common.PARTICIPANTS),
-            'success': success
+            'success': success,
+            'participants': ','.join(map(str, common.PARTICIPANTS))
         }
         common.DB.send_data(data, 'TB_StoryBuilding_Data')
     except:
