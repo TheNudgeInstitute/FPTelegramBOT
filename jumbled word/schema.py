@@ -107,27 +107,6 @@ if "TB_Telegram_Master" not in existing_tables:
     )
     print("Table status: Telegram_Master")
 
-if "TB_Quiz_Engagement" not in existing_tables:
-    dynamodb.create_table(
-        TableName='TB_Quiz_Engagement',
-        KeySchema=[
-            {
-                'AttributeName': 'User_id',
-                'KeyType': 'HASH'  # Partition key
-            }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'User_id',
-                'AttributeType': 'S'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        }
-    )
-    print('create table Quiz_Engagement')
 # print('Hello Temp_JumbledWord_Session table id. we need for that we need to generate the Id!! you need to genarate the id.!!!!!!!!!!!!')
 if "TB_Temp_JumbledWord_Session" not in existing_tables:
     dynamodb.create_table(
