@@ -23,6 +23,24 @@ def transcribe(filename: str) -> Optional[str]:
         return None
 
 
+def grammar_check(message_text: str) -> Optional[str]:
+    try:
+        response = openai.Completion.create(
+            model="text-davinci-001",
+            prompt=(f"Correct the grammar in the sentence: {message_text}"),
+            temperature=0,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
+        )
+        corrected_text = response["choices"][0]["text"]
+        return corrected_text.strip()
+    except Exception as e:
+        print(e)
+        return None
+
+
 def duration_lib(text: str) -> str:
     try:
         response = openai.Completion.create(
