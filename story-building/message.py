@@ -41,10 +41,10 @@ def send_skip_turn_message(chat_id, first_name):
     bot.send_message(chat_id, f'{first_name} ran out of time')
 
 
-def send_story_sentence(chat_id, text, corrected_text):
-    if text.casefold() != corrected_text.casefold():
+def send_story_sentence(chat_id, text, corrected_text, explanation):
+    if text.casefold() not in corrected_text.casefold():
         bot.send_message(chat_id, text + ' ❗')
-        bot.send_message(chat_id, f'Correct response - {corrected_text}')
+        bot.send_message(chat_id, f'Correct response - {corrected_text}\n{explanation}')
     else:
         bot.send_message(chat_id, text + ' ✅')
 

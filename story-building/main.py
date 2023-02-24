@@ -73,9 +73,9 @@ def skip_turn(chat_id):
 def play_turn(message):
     # TODO Disable Getting Messages During Play Turn
     print(f'Round: {common.ROUND}\tUser: {utils.get_current_user_name()}\tMessage: {message.text}')
-    corrected_text = grammar_check(message.text)
+    corrected_text, explanation = grammar_check(message.text)
     if message.from_user.id == get_current_user_id():
-        send_story_sentence(message.chat.id, message.text, corrected_text)
+        send_story_sentence(message.chat.id, message.text, corrected_text, explanation)
         common.STORY.append(corrected_text)
         next_turn(message.chat.id)
 
