@@ -24,6 +24,6 @@ def publish_game_data(success: bool):
             'success': success,
             'participants': ','.join(map(str, common.PARTICIPANTS))
         }
-        common.DB.send_data(data, 'TB_StoryBuilding_Data')
+        common.DB.send_data(data)
     except:
         traceback.print_exc()

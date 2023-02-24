@@ -11,17 +11,19 @@ class Database:
                                             region_name=os.getenv('AWS_REGION_NAME'),
                                             aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
                                             aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
+        self.storybuilding_bank = self.dynamo_client.Table(
+            os.getenv('TABLE_STORYBUILDING_BANK', 'TB_StoryBuilding_Bank'))
+        self.storybuilding_data = self.dynamo_client.Table(
+            os.getenv('TABLE_STORYBUILDING_DATA', 'TB_StoryBuilding_Data'))
 
-    def send_data(self, data, table_name):
-        table = self.dynamo_client.Table(table_name)
-        table.put_item(Item=data)
+    def send_data(self, data):
+        self.storybuilding_data.put_item(Item=data)
 
     def get_prompts(self):
-        table = self.dynamo_client.Table("TB_StoryBuilding_Bank")
-        response = table.scan()
+        response = self.storybuilding_bank.scan()
         data = response['Items']
         while 'LastEvaluatedKey' in response:
-            response = table.scan(
+            response = self.storybuilding_bank.scan(
                 ExclusiveStartKey=response['LastEvaluatedKey'])
             data.extend(response['Items'])
         return [item.get('prompt') for item in data]
