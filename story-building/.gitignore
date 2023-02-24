@@ -5,7 +5,10 @@ venv/
 .idea/
 
 # Environment Variables
-.env
+.env**
 
 # Log File
 nohup.out
+
+# Python
+__pycache__/

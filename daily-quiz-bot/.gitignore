@@ -1,5 +1,5 @@
 ### dotenv ###
-.env
+.env**
 
 # Environments
 venv/
@@ -13,3 +13,6 @@ test.py
 
 # System Files
 .DS_Store
+
+# Python
+__pycache__/
