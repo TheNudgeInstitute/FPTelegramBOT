@@ -17,10 +17,10 @@ class Database:
                                             region_name=os.getenv('AWS_REGION_NAME'),
                                             aws_access_key_id=os.getenv('AWS_ACCESS_KEY'),
                                             aws_secret_access_key=os.getenv('AWS_SECRET_ACCESS_KEY'))
-        self.quiz_bank = self.dynamo_client.Table('TB_QuizBot_Bank')
-        self.quiz_polls = self.dynamo_client.Table('TB_QuizBot_Polls')
-        self.quiz_engagement = self.dynamo_client.Table('TB_QuizBot_Engagement')
-        self.quiz_session = self.dynamo_client.Table('TB_QuizBot_Session')
+        self.quiz_bank = self.dynamo_client.Table(os.getenv('TABLE_QUIZBOT_BANK', 'TB_QuizBot_Bank'))
+        self.quiz_polls = self.dynamo_client.Table(os.getenv('TABLE_QUIZBOT_POLLS', 'TB_QuizBot_Polls'))
+        self.quiz_engagement = self.dynamo_client.Table(os.getenv('TABLE_QUIZBOT_ENGAGEMENT', 'TB_QuizBot_Engagement'))
+        self.quiz_session = self.dynamo_client.Table(os.getenv('TABLE_QUIZBOT_SESSION', 'TB_QuizBot_Session'))
 
     def get_quiz(self):
         response = self.quiz_bank.query(IndexName='quiz-index',
@@ -46,22 +46,26 @@ class Database:
         self.quiz_polls.delete_item(Key={'poll_id': poll['poll_id']})
 
     def put_quiz_engagement(self, quiz_no, engagement, correct_answers):
+        timestamp = datetime.now(ZoneInfo('Asia/Kolkata'))
         engagement = {
             'quiz_no': quiz_no,
-            'timestamp': datetime.now(ZoneInfo('Asia/Kolkata')).isoformat(),
+            'timestamp': timestamp.isoformat(),
             'engagement': engagement,
-            'correct_answers': correct_answers
+            'correct_answers': correct_answers,
+            'date': timestamp.strftime('%Y-%m-%d')
         }
         self.quiz_engagement.put_item(Item=engagement)
 
     def put_quiz_session(self, quiz_no, user_answers):
+        timestamp = datetime.now(ZoneInfo('Asia/Kolkata'))
         sessions = list()
         for user_id, user_answer in user_answers.items():
             sessions.append({
                 'quiz_no': quiz_no,
                 'user_id': user_id,
                 'user': user_answer.get('user'),
-                'scores': user_answer.get('scores')
+                'scores': user_answer.get('scores'),
+                'date': timestamp.strftime('%Y-%m-%d')
             })
 
         with self.quiz_session.batch_writer() as batch:
