@@ -18,6 +18,9 @@ def send_poll(prompt, options, correct_index, explanation):
         'explanation': explanation
     }
     response = requests.get(BASE_URL + '/sendPoll', data=parameters)
+    if response.status_code != 200:
+        print(response.text)
+        return None
     response_json = response.json()
     return response_json.get('result')
 
@@ -28,6 +31,9 @@ def stop_poll(message_id):
         'message_id': message_id
     }
     response = requests.get(BASE_URL + '/stopPoll', data=parameters)
+    if response.status_code != 200:
+        print(response.text)
+        return None
     response_json = response.json()
     return response_json.get('result')
 
@@ -41,6 +47,5 @@ def send_message(message_text):
     if response.status_code != 200:
         print(response.text)
         return None
-    else:
-        response_json = response.json()
-        return response_json.get('result')
+    response_json = response.json()
+    return response_json.get('result')
