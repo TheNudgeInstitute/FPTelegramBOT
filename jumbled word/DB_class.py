@@ -32,7 +32,7 @@ class DynamoDB_con():
     # def update_table(self,data,tableName):
     #     table = self.dynamo_client.Table(tableName)
     def get_words(self):
-        table = self.dynamo_client.Table("TB_JumbledWord_bank")
+        table = self.dynamo_client.Table(os.environ.get('JumbledWord_Bank', 'TB_JumbledWord_bank'))
         response = table.scan()
         data = response['Items']
         while 'LastEvaluatedKey' in response:
@@ -41,9 +41,9 @@ class DynamoDB_con():
             data.extend(response['Items'])
         return data, len(data)
         
-    def deleteTotalData(self,table_name='TB_Temp_JumbledWord_Session'):
+    def deleteTotalData(self):
         flag = False
-        table = self.dynamo_client.Table(table_name)
+        table = self.dynamo_client.Table(os.environ.get('Temp_JumbledWord_Session', 'TB_Temp_JumbledWord_Session'))
         scan = table.scan()
         while not flag:
             with table.batch_writer() as batch:

@@ -10,9 +10,18 @@ dynamodb = boto3.resource(service_name=os.getenv('service_name'), region_name=os
     'region_name'), aws_access_key_id=os.getenv('aws_access_key_id'), aws_secret_access_key=os.getenv('aws_secret_access_key'))
 existing_tables = [table.name for table in dynamodb.tables.all()]
 
-if 'TB_JumbledWord_Engagement' not in existing_tables:
+engagement = os.environ.get('JumbledWord_Engagement', 'TB_JumbledWord_Engagement')
+uPoints = os.environ.get('User_Points', 'TB_User_Points')
+session = os.environ.get('Temp_JumbledWord_Session', 'TB_Temp_JumbledWord_Session')
+jBank = os.environ.get('JumbledWord_bank', 'TB_JumbledWord_bank')
+
+# uMaster = os.environ.get('User_Master', 'TB_User_Master')
+# tMaster = os.environ.get('Telegram_Master', 'TB_Telegram_Master')
+
+
+if engagement not in existing_tables:
     dynamodb.create_table(
-        TableName='TB_JumbledWord_Engagement',
+        TableName = engagement,
         KeySchema=[
             {
                 'AttributeName': 'Date',
@@ -41,31 +50,31 @@ if 'TB_JumbledWord_Engagement' not in existing_tables:
     print('create table JumbledWord_Engagement')
 
 
-if "TB_User_Master" not in existing_tables:
-    dynamodb.create_table(
-        TableName='TB_User_Master',
-        KeySchema=[
-            {
-                'AttributeName': 'User_id',
-                'KeyType': 'HASH'  # Partition key
-            }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'User_id',
-                'AttributeType': 'S'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        }
-    )
-    print('create table User_Master')
+# if uMaster not in existing_tables:
+#     dynamodb.create_table(
+#         TableName=uMaster,
+#         KeySchema=[
+#             {
+#                 'AttributeName': 'User_id',
+#                 'KeyType': 'HASH'  # Partition key
+#             }
+#         ],
+#         AttributeDefinitions=[
+#             {
+#                 'AttributeName': 'User_id',
+#                 'AttributeType': 'S'
+#             }
+#         ],
+#         ProvisionedThroughput={
+#             'ReadCapacityUnits': 10,
+#             'WriteCapacityUnits': 10
+#         }
+#     )
+#     print('create table User_Master')
 
-if "TB_User_Points" not in existing_tables:
+if uPoints not in existing_tables:
     dynamodb.create_table(
-        TableName='TB_User_Points',
+        TableName=uPoints,
         KeySchema=[
             {
                 'AttributeName': 'User_id',
@@ -85,32 +94,33 @@ if "TB_User_Points" not in existing_tables:
     )
     print('create table User_Points')
 
-if "TB_Telegram_Master" not in existing_tables:
-    dynamodb.create_table(
-        TableName='TB_Telegram_Master',
-        KeySchema=[
-            {
-                'AttributeName': 'User_id',
-                'KeyType': 'HASH'  # Partition key
-            }
-        ],
-        AttributeDefinitions=[
-            {
-                'AttributeName': 'User_id',
-                'AttributeType': 'S'
-            }
-        ],
-        ProvisionedThroughput={
-            'ReadCapacityUnits': 10,
-            'WriteCapacityUnits': 10
-        }
-    )
-    print("Table status: Telegram_Master")
+# if tMaster not in existing_tables:
+#     dynamodb.create_table(
+#         TableName=tMaster,
+#         KeySchema=[
+#             {
+#                 'AttributeName': 'User_id',
+#                 'KeyType': 'HASH'  # Partition key
+#             }
+#         ],
+#         AttributeDefinitions=[
+#             {
+#                 'AttributeName': 'User_id',
+#                 'AttributeType': 'S'
+#             }
+#         ],
+#         ProvisionedThroughput={
+#             'ReadCapacityUnits': 10,
+#             'WriteCapacityUnits': 10
+#         }
+#     )
+#     print("Table status: Telegram_Master")
 
 # print('Hello Temp_JumbledWord_Session table id. we need for that we need to generate the Id!! you need to genarate the id.!!!!!!!!!!!!')
-if "TB_Temp_JumbledWord_Session" not in existing_tables:
+print(existing_tables, '-----------------')
+if session not in existing_tables:
     dynamodb.create_table(
-        TableName='TB_Temp_JumbledWord_Session',
+        TableName=session,
         KeySchema=[
             {
                 'AttributeName': 'ID',
@@ -128,9 +138,9 @@ if "TB_Temp_JumbledWord_Session" not in existing_tables:
             'WriteCapacityUnits': 10
         }
     )
-if "TB_JumbledWord_bank" not in existing_tables:
+if jBank not in existing_tables:
     dynamodb.create_table(
-        TableName='TB_JumbledWord_bank',
+        TableName=jBank,
         KeySchema=[
             {
                 'AttributeName': 'word',
