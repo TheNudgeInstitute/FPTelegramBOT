@@ -144,7 +144,7 @@ def alert(messageId, msg, show_alert=False):
 
 
 def genrate_sessionId():
-    sessionData, totalSess = DB.read_read('TB_Temp_JumbledWord_Session')
+    sessionData, totalSess = DB.read_read(os.environ.get('Temp_JumbledWord_Session', 'TB_Temp_JumbledWord_Session'))
     f = True
 
     def generateFun():
@@ -239,8 +239,8 @@ def join_game(game, message, mode='auto', time=60):
                     
                     data = {"Date":str(date.today()),"Datetime": str(datetime.now()), 'JumbledWord_InitiatedByUser_ID': str(
                         common.game_creater['InitiatedBy']), "JumbledWord_Participation": len(common.participants),"participants_ids":total_users_id}
-                    
-                    DB.send_data(data, 'TB_JumbledWord_Engagement')
+                    table_name = os.environ.get('JumbledWord_Engagement', 'TB_JumbledWord_Engagement')
+                    DB.send_data(data, table_name)
 
                 if common.runner == 0 or common.runner == 3:
 
@@ -303,7 +303,8 @@ def winner(message, r=True):
         data = {"ID": str(datetime.today() .timestamp()).replace('.', ''), "Datetime": str(datetime.now()), "User_Id": str(
             d), "Points_Scored": str(common.scour_Dict[d]['points']), "sessionId": common.scour_Dict[d]['sessionId']}
         print(data,'<<<<<<<<<<<<<<<<<<<<<<<<<')
-        DB.send_data(data, 'TB_Temp_JumbledWord_Session')
+        table_name = os.environ.get('Temp_JumbledWord_Session', 'TB_Temp_JumbledWord_Session')
+        DB.send_data(data, table_name)
 
     scoring = []
     for num in pointsList:

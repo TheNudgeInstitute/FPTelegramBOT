@@ -4,9 +4,11 @@ from boto3.dynamodb.conditions import Key
 import sys,os
 import datetime
 from dotenv import load_dotenv
-sys.path.append(os.getcwd())
-from config import * 
 load_dotenv()  # this is for the env file loading
+sys.path.append(os.getcwd())
+storybuilding_data=os.getenv('storybuilding_data')
+quizbot_engagement=os.getenv('quizbot_engagement')
+quizbot_session=os.getenv('quizbot_session')
 
 class DynamoDB_con():
     def __init__(self):
@@ -26,7 +28,7 @@ class DynamoDB_con():
         return data
     def read_data(self, tableName,keyValue,queryValue):
         table = self.dynamo_client.Table(tableName)
-        if tableName==storybuilding_data:
+        if tableName==storybuilding_data or tableName==quizbot_engagement or tableName==quizbot_session:
             response=table.query(IndexName='date-index',KeyConditionExpression=Key(keyValue).eq(queryValue))
         else:
             response=table.query(KeyConditionExpression=Key(keyValue).eq(queryValue))

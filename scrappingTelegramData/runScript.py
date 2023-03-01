@@ -2,6 +2,7 @@ import schedule
 import os
 import time
 import db.create_db
+from config import * 
 from pathlib import Path
 from dotenv import load_dotenv
 load_dotenv()

@@ -7,16 +7,9 @@ import time
 import gspread
 import re
 sys.path.append(os.getcwd())
+from pyrogram import enums
 from config import * 
-from pyrogram import Client, enums
-from db.db_model import DynamoDB_con
-DB = DynamoDB_con()
 
-app = Client(
-    "YOUR_BOT",
-    api_id = os.getenv('API_ID'),
-    api_hash = os.getenv('API_HASH')
-)
 cur_path = os.path.dirname(__file__)
 group_chat_id=os.getenv('GROUP_CHAT_ID')
 yesterday = datetime.date.today() - datetime.timedelta(days=1)
@@ -30,9 +23,6 @@ wordOfTheDay='NO_WORD_YET'
 userMap={
     -1001636582068:[yesterday_str,-1001636582068,0,'N',0,0,0,0,0,0,0,0]
     }
-
-with open('workSheet3/quiz_number.json') as f:
-   quiz_number = json.load(f)[0]+1
    
 def refactor_JWB(obj):
     JumbledWord_InitiatedByUser_ID=int(obj['JumbledWord_InitiatedByUser_ID'])
@@ -157,7 +147,7 @@ async def main():
         useFullMessage.reverse()
         while i<len(useFullMessage):
             i,result,user_id=checkValid(i,useFullMessage)
-            if result:
+            if result and user_id in userMap:
                 userMap[user_id][4]=userMap[user_id][4]+1
          
         # to get JWB data
@@ -172,7 +162,7 @@ async def main():
             refactor_SBB(el)
         
         # to get quizBot session
-        quizSession_data=DB.read_data(quizbot_session,'quiz_no',quiz_number)
+        quizSession_data=DB.read_data(quizbot_session,'date',yesterday_str)
         for el in quizSession_data:
             refactor_quizSession(el)
         
@@ -180,9 +170,6 @@ app.run(findWod())
 app.run(main())
 
 userList=list(userMap.values())
-
-with open('workSheet3/quiz_number.json', "w") as file:
-    json.dump([quiz_number], file,indent=4)
         
 # PUSHING to DynamoDB
 for el in userList:
