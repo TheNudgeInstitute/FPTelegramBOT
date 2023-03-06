@@ -1,4 +1,4 @@
-import dhwani_jumble
+import jumble
 import time
 import random   
 import json
@@ -136,18 +136,18 @@ def start_timer(name, sec, game, message):
             print(sec, i, name)
             if i == 30 or i == 15:
                 if name == "join-wait":
-                    dhwani_jumble.create_game( message, i)
+                    jumble.create_game( message, i)
                    
             elif i == 0:  
                 if name == "join-wait":
                     # if len(participants)>1:
-                    dhwani_jumble.start_game(message)
+                    jumble.start_game(message)
                     # else:
                         
-                    #     dhwani_jumble.onlyoneplayer(message)
+                    #     jumble.onlyoneplayer(message)
                 elif name == "player-wait":
                     print(message)
-                    dhwani_jumble.checkAnswer(message,mode="manual")
+                    jumble.checkAnswer(message,mode="manual")
                     break
     except Exception as e:
         print('error in start_timer function @@@@@@@@@@@@@@', e)
@@ -159,7 +159,7 @@ def run(stop,message,sec):
         time.sleep(1)
         print(sec, i)
         if i == 0:
-            dhwani_jumble.checkAnswer(message,mode="time")
+            jumble.checkAnswer(message,mode="time")
 
             
         elif  stop():
