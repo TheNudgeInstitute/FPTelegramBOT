@@ -92,6 +92,7 @@ def winner(message):
         sticker_file_id = 'CAACAgIAAxkBAAEH4Zxj-JriMmWjh92vf6cdEupnknXOJgACAQEAAvcCyA--Bt0rrVjiJC4E'
         bot.send_sticker(message.chat.id, sticker=sticker_file_id)
         bot.send_message(message.chat.id,f'No one has a score greater than zero\n\nThank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\nKeep it up and practice more..!!📚📚📚📚')
+        restart()
         
 
 def create_game(message,t=60):
