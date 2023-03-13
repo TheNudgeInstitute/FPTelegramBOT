@@ -83,7 +83,7 @@ def winner(message):
         winner_name = sorted_usernames[0]
         
         for i in range(len(sorted_usernames)): 
-            output_string += f"{sorted_usernames[i]}: {sorted_points[i]}/4 Questions Correct\n" 
+            output_string += f"{sorted_usernames[i]}: {sorted_points[i]}/{common.max_round+1} Questions Correct\n" 
         bot.send_message(message.chat.id,f'Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\n{output_string}\nCongratulations: {winner_name}\nYou are the winner\n\nKeep it up and practice more..!!📚📚📚📚')
         sticker_file_id = 'CAACAgIAAxkBAAEH3o9j935Cvbup1Wr54tFO6awWbm2jiwACSQEAAladvQp1bSI3184pVC4E'
         bot.send_sticker(message.chat.id, sticker=sticker_file_id)
