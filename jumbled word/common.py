@@ -109,12 +109,19 @@ def get_jumble():
         
         jumbled = ''
         random_number = random.randrange(0, len(word))
+        print(len(word))
         for i in range(0, len(word)):
             if len(word) == 3:
                 if i == 1:
                     jumbled += word[i]
                 else:
                     jumbled+="_"
+            elif len(word) == 6:
+                if i == 1 or i ==4:
+                    jumbled += word[i]
+                else:
+                    jumbled+="_"
+                
             else:
                 if i == random_number-1 or i ==random_number+2:
                     jumbled += word[i]
