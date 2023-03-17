@@ -1,0 +1,6 @@
+pandas==1.5.2
+pyTelegramBotAPI==4.9.0
+python-dotenv==0.21.1
+python-telegram-bot==20.0
+telebot==0.0.4
+pyenchant==3.2.2

@@ -1,0 +1,8 @@
+check
+Python : 3.10.6
+
+for run the File:
+"Python3 jumble.py" for Linux
+"Python jumble.py" for windows
+
+
