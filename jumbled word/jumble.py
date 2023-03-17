@@ -78,13 +78,18 @@ def winner(message):
         
         sorted_usernames = [x for _, x in sorted(zip(points, usernames), reverse=True)]
         sorted_points = sorted(points, reverse=True)  
-            
+        max_points = max(sorted_points)
+        winner_name = [sorted_usernames[i] for i in range(len(sorted_points)) if sorted_points[i] == max_points]    
         output_string = "" 
-        winner_name = sorted_usernames[0]
+        # winner_name = sorted_usernames[0]
         
         for i in range(len(sorted_usernames)): 
             output_string += f"{sorted_usernames[i]}: {sorted_points[i]}/{common.max_round+1} Questions Correct\n" 
-        bot.send_message(message.chat.id,f'Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\n{output_string}\nCongratulations: {winner_name}\nYou are the winner\n\nKeep it up and practice more..!!📚📚📚📚')
+        if len(winner_name)>1:
+            winner_name = ",".join([winner_name[i] for i in range(len(winner_name))])
+            bot.send_message(message.chat.id,f'Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\n{output_string}\nCongratulations: {winner_name}\nYou both are the winner\n\nKeep it up and practice more..!!📚📚📚📚')
+        else:
+            bot.send_message(message.chat.id,f'Thank you for participating in the Jumble word Game! 🥳🎉🎉🎉\n\n{output_string}\nCongratulations: {winner_name}\nYou are the winner\n\nKeep it up and practice more..!!📚📚📚📚')
         sticker_file_id = 'CAACAgIAAxkBAAEH3o9j935Cvbup1Wr54tFO6awWbm2jiwACSQEAAladvQp1bSI3184pVC4E'
         bot.send_sticker(message.chat.id, sticker=sticker_file_id)
         restart()
